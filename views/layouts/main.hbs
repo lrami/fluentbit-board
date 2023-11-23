@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fluentbit Board</title>
+</head>
+
+<body>
+    <div class="container">
+        {{{ body }}}
+    </div>
+</body>
+<style>
+    #events {
+        margin: 10px;
+    }
+</style>
+<script>
+
+    const ws = new WebSocket("ws://127.0.0.1:8080");
+
+    ws.onopen = (event) => {
+        console.log("Connected.")
+    }
+    ws.onerror = (error) => {
+        console.error(error);
+    }
+
+    ws.onmessage = (event) => {
+        console.log(event)
+        const events = document.getElementById("events");
+        events.innerHTML = event.data;
+    }
+
+    const connect = async () => {
+        const address = document.getElementById('addressField');
+
+        const options = {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                path: address.value,
+            })
+        }
+
+        fetch('http://localhost:3000/connect', options)
+            .then(response => console.log("ok"))
+            .catch(err => console.error(err))
+    }
+
+    const flush = async () => {
+        fetch("http://localhost:3000/clear", {
+            method: 'DELETE'
+        })
+            .then(() => console.log("Clear ok"))
+            .catch(err => console.error(err))
+
+    }
+
+</script>
+
+</html>
